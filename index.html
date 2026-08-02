@@ -107,12 +107,12 @@ a:hover{color:var(--gold)}
   <div class="hero">
     <h1>Welcome to VerseTube</h1>
     <p>Videos, shorts, an AI you can chat with, and a full arcade of games â€” all in one premium hub.</p>
-    <div class="flex">
-      <a href="https://versetube.vercel.app/client/dashboard" class="btn">Chat with Verse AI</a>
-      <button class="btn btn-outline" onclick="scrollTo({top:document.getElementById('videos').offsetTop-70,behavior:'smooth'})">Watch Videos</button>
+<div class="flex">
+      <button class="btn" onclick="scrollTo({top:document.getElementById('tabs').offsetTop-70,behavior:'smooth'})">Watch Videos</button>
+      <a href="https://www.youtube.com/@TheVerseTube" target="_blank" rel="noopener" class="btn btn-outline">Our YouTube</a>
     </div>
   </div>
-  <div class="tabs">
+  <div class="tabs" id="tabs">
     <button id="tab-videos" class="active" onclick="switchTab('videos',this)">Videos</button>
     <button id="tab-shorts" onclick="switchTab('shorts',this)">Shorts</button>
   </div>
