@@ -1,121 +1,571 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>versetube — Watch & Share</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VerseTube</title>
   <style>
-    :root {
-      --bg: #0f1117;
-      --card: #1a1d27;
-      --accent: #ff3b6b;
-      --text: #e8eaf2;
-      --muted: #8b90a3;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-    }
-    .tag {
-      display: inline-block;
-      background: rgba(255, 59, 107, .15);
-      color: var(--accent);
-      padding: .3rem .8rem;
-      border-radius: 999px;
-      font-size: .8rem;
-      font-weight: 600;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      margin-bottom: 1.5rem;
-    }
-    h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 800; letter-spacing: -1px; }
-    h1 span { color: var(--accent); }
-    p.sub {
-      color: var(--muted);
-      margin-top: 1rem;
-      max-width: 34rem;
-      text-align: center;
-      font-size: 1.05rem;
-      line-height: 1.6;
-    }
-    form {
-      margin-top: 2.5rem;
-      display: flex;
-      gap: 0.6rem;
-      width: 100%;
-      max-width: 30rem;
-    }
-    input {
-      flex: 1;
-      padding: .85rem 1.1rem;
-      border-radius: 12px;
-      border: 1px solid #2a2f3d;
-      background: var(--card);
-      color: var(--text);
-      font-size: 1rem;
-      outline: none;
-    }
-    input:focus { border-color: var(--accent); }
-    button {
-      padding: .85rem 1.4rem;
-      border-radius: 12px;
-      border: none;
-      background: var(--accent);
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    button:hover { filter: brightness(1.1); }
-    .featured {
-      margin-top: 3.5rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      width: 100%;
-      max-width: 40rem;
-    }
-    .card {
-      background: var(--card);
-      border: 1px solid #232838;
-      border-radius: 14px;
-      padding: 1.25rem;
-    }
-    .card h3 { font-size: 1rem; margin-bottom: .35rem; }
-    .card p { color: var(--muted); font-size: .875rem; line-height: 1.5; }
-    footer { margin-top: 4rem; color: var(--muted); font-size: .8rem; }
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#08060e;--bg2:#0e0a18;--card:#120c1f;--border:#241a3a;--purple:#a855f7;--purple2:#7c3aed;--gold:#ffd700;--gold2:#e6b800;--txt:#f0eaff;--mut:#9d92b8}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:radial-gradient(1200px 600px at 80% -10%,rgba(124,58,237,.14),transparent),radial-gradient(900px 500px at -10% 30%,rgba(255,215,0,.05),transparent),var(--bg);color:var(--txt);overflow-x:hidden;min-height:100vh}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+#topbar{position:fixed;top:0;left:0;right:0;height:60px;background:rgba(10,7,18,.82);backdrop-filter:blur(14px);display:flex;align-items:center;padding:0 20px;z-index:100;border-bottom:1px solid var(--border)}
+#topbar .logo{display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0}
+#topbar .logo img{width:30px;height:30px;border-radius:8px;object-fit:cover;box-shadow:0 0 12px rgba(168,85,247,.4)}
+#topbar .logo span{font-weight:800;font-size:17px;letter-spacing:.5px;background:linear-gradient(90deg,#fff 30%,#c79bff 60%,var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+#topbar .spacer{flex:1}
+#sidebar{position:fixed;top:60px;left:0;bottom:0;width:76px;background:rgba(10,7,18,.6);backdrop-filter:blur(10px);overflow-y:auto;z-index:99;padding:8px 0;display:flex;flex-direction:column;align-items:center;gap:2px;border-right:1px solid var(--border)}
+#sidebar .s-item{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 0;width:calc(100% - 12px);border-radius:12px;cursor:pointer;color:var(--mut);font-size:10px;font-weight:600;transition:all .22s;border:none;background:none;font-family:inherit}
+#sidebar .s-item:hover{background:rgba(168,85,247,.12);color:#fff;transform:translateY(-1px)}
+#sidebar .s-item.active{color:var(--gold);background:linear-gradient(180deg,rgba(168,85,247,.18),rgba(168,85,247,.06));box-shadow:inset 0 0 0 1px rgba(168,85,247,.35)}
+#sidebar .s-item svg{width:22px;height:22px;display:block}
+.main-content{margin-left:76px;margin-top:60px;padding:28px;min-height:calc(100vh - 60px);animation:fadeIn .4s ease}
+.yt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.yt-vid{cursor:pointer;transition:all .2s;border-radius:12px;overflow:hidden}
+.yt-vid:hover{background:#1a1a1a}
+.yt-vid .thumb{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#222}
+.yt-vid .thumb img{width:100%;height:100%;object-fit:cover}
+.yt-vid .info{padding:8px 4px;display:flex;gap:10px}
+.yt-vid .info .text{flex:1;min-width:0}
+.yt-vid .info .title{font-size:14px;font-weight:500;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}
+.yt-vid .info .meta{font-size:12px;color:#aaa;margin-top:4px}
+#player-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column}
+#player-overlay.show{display:flex}
+#player-overlay .close-btn{position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:50%;background:#1a1a1a;border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#player-overlay .close-btn:hover{background:#333}
+#player-wrap{width:90%;max-width:960px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+#player-wrap iframe{width:100%;height:100%;border:none}
+#player-overlay .yt-btn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:10px 24px;background:#ff0000;color:#fff;border:none;border-radius:24px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;font-family:inherit}
+#player-overlay .yt-btn:hover{background:#cc0000}
+.hero{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--border);background:linear-gradient(120deg,rgba(124,58,237,.22),rgba(255,215,0,.06) 60%,transparent),var(--card);padding:34px 30px;margin-bottom:26px;animation:slideUp .5s ease}
+.hero h1{font-size:28px;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,#fff,#c79bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--mut);font-size:14px;max-width:560px;line-height:1.6;margin-bottom:18px}
+.btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;padding:11px 24px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .25s ease;letter-spacing:.3px;text-decoration:none;font-family:inherit}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(168,85,247,.45)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:#cbc0e6}
+.btn-outline:hover{background:rgba(168,85,247,.1);border-color:var(--purple);color:#fff;box-shadow:none}
+.flex{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tabs button{background:#120c1f;border:1px solid var(--border);color:var(--mut);padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;border-radius:20px;transition:all .2s;box-shadow:none;font-family:inherit}
+.tabs button.active{color:#fff;background:linear-gradient(135deg,var(--purple),var(--purple2));border-color:transparent}
+.tabs button:hover{color:#fff;transform:none}
+.shorts-shelf{display:flex;gap:12px;overflow-x:auto;padding:8px 0 16px;scrollbar-width:thin}
+.shorts-shelf::-webkit-scrollbar{height:4px}
+.shorts-shelf::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+.shorts-shelf .short-card{flex:0 0 180px;cursor:pointer;transition:all .2s;border-radius:10px;overflow:hidden}
+.shorts-shelf .short-card:hover{transform:translateY(-4px)}
+.shorts-shelf .short-card .thumb{width:100%;aspect-ratio:9/16;border-radius:10px;overflow:hidden;background:#222}
+.shorts-shelf .short-card .thumb img{width:100%;height:100%;object-fit:cover}
+.shorts-shelf .short-card .info{padding:8px 4px}
+.shorts-shelf .short-card .info .title{font-size:13px;font-weight:500;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}
+.shorts-shelf .short-card .info .meta{font-size:11px;color:#aaa;margin-top:2px}
+.section-title{font-size:16px;font-weight:600;color:#fff;margin:20px 0 12px 0}
+.skel{background:linear-gradient(90deg,#160f28 25%,#1f1636 50%,#160f28 75%);background-size:800px 100%;animation:shimmer 1.4s infinite linear;border-radius:12px}
+#topbar input{background:rgba(255,255,255,.06);border:1px solid var(--border);color:#fff;padding:8px 14px;border-radius:20px;font-size:13px;width:100%;height:36px;outline:none}
+#topbar input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(168,85,247,.15)}
+a{color:#c79bff;text-decoration:none;transition:color .2s}
+a:hover{color:var(--gold)}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#3a2a5e;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--purple)}
+@media(max-width:768px){#sidebar{width:56px}#sidebar .s-item{padding:8px 0;font-size:8px}#sidebar .s-item svg{width:18px;height:18px}.main-content{margin-left:56px;padding:12px}.yt-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}}
+@media(max-width:480px){
+  #sidebar{top:auto;bottom:0;left:0;right:0;width:100%;height:52px;flex-direction:row;padding:0;border-top:1px solid #241a3a;border-right:none;overflow-x:hidden;justify-content:space-around}
+  #sidebar .s-item{padding:4px 0;min-width:0;font-size:6px;gap:1px;flex:1}
+  #sidebar .s-item svg{width:16px;height:16px}
+  .main-content{margin-left:0;margin-bottom:52px;padding:8px}
+  #topbar{height:48px}
+  #topbar .logo span{display:none}
+  .main-content{margin-top:48px}
+  #player-overlay .close-btn{top:8px;left:8px;width:32px;height:32px;font-size:16px}
+  #player-wrap{width:100%;border-radius:0}
+}
   </style>
 </head>
 <body>
-  <div class="tag">Coming soon</div>
-  <h1>verse<span>tube</span></h1>
-  <p class="sub">Watch, share, and discover the moments that matter — coming to <strong>versetube.me</strong>.</p>
-  <form>
-    <input type="email" placeholder="name@email.com" aria-label="Email">
-    <button type="submit">Notify me</button>
-  </form>
-  <div class="featured">
-    <div class="card">
-      <h3>Watch</h3>
-      <p>Stream quality video with built-in community tools.</p>
+  <div id="topbar">
+    <div class="logo" onclick="location.href='/'">
+      <img src="/logo.png">
+      <span>VerseTube</span>
     </div>
-    <div class="card">
-      <h3>Share</h3>
-      <p>Reach every screen — desktop, mobile, and more.</p>
+    <div style="flex:1;max-width:420px;margin:0 16px;display:flex;align-items:center">
+      <input id="top-search" type="text" placeholder="Search videos, games, anime..." onkeydown="if(event.key==='Enter'&&this.value.trim()){var q=this.value.trim().toLowerCase();var boxes=document.querySelectorAll('.yt-vid .title,.short-card .title');for(var i=0;i<boxes.length;i++){boxes[i].parentElement.parentElement.style.display=boxes[i].textContent.toLowerCase().indexOf(q)>-1?'':'none'}}">
     </div>
-    <div class="card">
-      <h3>Grow</h3>
-      <p>Analytics and creation tools you'll actually love.</p>
+    <div class="spacer"></div>
+  </div>
+  <div id="sidebar">
+    <button class="s-item active" onclick="scrollTo(0,0)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 21V9l8-6 8 6v12h-6v-7h-4v7H4z"/></svg>
+      <span>Home</span>
+    </button>
+  </div>
+  <div class="main-content">
+  <div class="hero">
+    <h1>Welcome to VerseTube</h1>
+    <p>Videos, shorts, an AI you can chat with, and a full arcade of games â€” all in one premium hub.</p>
+    <div class="flex">
+      <a href="https://versetube.vercel.app/client/dashboard" class="btn">Chat with Verse AI</a>
+      <button class="btn btn-outline" onclick="scrollTo({top:document.getElementById('videos').offsetTop-70,behavior:'smooth'})">Watch Videos</button>
     </div>
   </div>
-  <footer>&copy; 2026 versetube.me</footer>
+  <div class="tabs">
+    <button id="tab-videos" class="active" onclick="switchTab('videos',this)">Videos</button>
+    <button id="tab-shorts" onclick="switchTab('shorts',this)">Shorts</button>
+  </div>
+  <div id="videos">
+
+  <div class="yt-grid" id="video-grid">
+    <div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div><div class="skel" style="height:11px;width:55%"></div></div><div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div><div class="skel" style="height:11px;width:55%"></div></div><div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div><div class="skel" style="height:11px;width:55%"></div></div><div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div><div class="skel" style="height:11px;width:55%"></div></div><div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div><div class="skel" style="height:11px;width:55%"></div></div><div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div><div class="skel" style="height:11px;width:55%"></div></div><div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div><div class="skel" style="height:11px;width:55%"></div></div><div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div><div class="skel" style="height:11px;width:55%"></div></div>
+  </div>
+  </div>
+  <div id="shorts-section" style="display:none">
+    <div class="section-title">Shorts</div>
+    <div class="shorts-shelf" id="shorts-shelf"></div>
+  </div>
+
+  <div id="player-overlay">
+    <button class="close-btn" onclick="closePlayer()">&times;</button>
+    <div id="player-wrap"></div>
+    <a id="watch-on-yt" class="yt-btn" href="#" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.55A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.88.55 9.38.55 9.38.55s7.5 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg>
+      Watch on YouTube
+    </a>
+  </div>
+
+  <div style="text-align:center;padding:24px 0;color:#666;font-size:12px">
+    <a href="https://www.youtube.com/@TheVerseTube" target="_blank" style="color:#fff">YouTube</a> &middot;
+    <a href="https://www.instagram.com/versetube07/" target="_blank" style="color:#fff">Instagram</a> &middot;
+    <a href="https://x.com/VerseTube007" target="_blank" style="color:#fff">X</a>
+  </div>
+
+  <script>
+    var VIDEOS = [
+    {
+        "id":  "mwlDqV7CN1Q",
+        "title":  "What is wrong with BlackBeard?",
+        "thumb":  "https://i2.ytimg.com/vi/mwlDqV7CN1Q/hqdefault.jpg",
+        "views":  "15 views",
+        "ago":  "Yesterday",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "wIl6Y-w8pV8",
+        "title":  "Trauma = Power ?",
+        "thumb":  "https://i4.ytimg.com/vi/wIl6Y-w8pV8/hqdefault.jpg",
+        "views":  "157 views",
+        "ago":  "4 days ago",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "BpARFik1OmM",
+        "title":  "The One Piece was never a Treasure?",
+        "thumb":  "https://i3.ytimg.com/vi/BpARFik1OmM/hqdefault.jpg",
+        "views":  "943 views",
+        "ago":  "8 days ago",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "1ULLosRvmt8",
+        "title":  "These are the top 10 strongest characters in Naruto!!",
+        "thumb":  "https://i2.ytimg.com/vi/1ULLosRvmt8/hqdefault.jpg",
+        "views":  "69 views",
+        "ago":  "10 days ago",
+        "duration":  "",
+        "isShort":  true
+    },
+    {
+        "id":  "StGV7HK9p-c",
+        "title":  "How strong is suigetsu in Naruto Shippuden?",
+        "thumb":  "https://i4.ytimg.com/vi/StGV7HK9p-c/hqdefault.jpg",
+        "views":  "91 views",
+        "ago":  "13 days ago",
+        "duration":  "",
+        "isShort":  true
+    },
+    {
+        "id":  "hHBUdLzMR0k",
+        "title":  "TOP 12 Greatest Battles in NARUTO and Shippuden",
+        "thumb":  "https://i1.ytimg.com/vi/hHBUdLzMR0k/hqdefault.jpg",
+        "views":  "505 views",
+        "ago":  "15 days ago",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "rrHQfr3TQPE",
+        "title":  "Why shinobis use chakra to cover their weapons in Naruto series?",
+        "thumb":  "https://i3.ytimg.com/vi/rrHQfr3TQPE/hqdefault.jpg",
+        "views":  "97 views",
+        "ago":  "18 days ago",
+        "duration":  "",
+        "isShort":  true
+    },
+    {
+        "id":  "kkbDMwn20zI",
+        "title":  "Can Goku survive the planet exploding?",
+        "thumb":  "https://i4.ytimg.com/vi/kkbDMwn20zI/hqdefault.jpg",
+        "views":  "383 views",
+        "ago":  "29 days ago",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "9240HML9PJo",
+        "title":  "How strong is sasuke in his prime?",
+        "thumb":  "https://i2.ytimg.com/vi/9240HML9PJo/hqdefault.jpg",
+        "views":  "4074 views",
+        "ago":  "32 days ago",
+        "duration":  "",
+        "isShort":  true
+    },
+    {
+        "id":  "yy9R2gPlEd0",
+        "title":  "did the curse mark actually make sasuke weaker?",
+        "thumb":  "https://i2.ytimg.com/vi/yy9R2gPlEd0/hqdefault.jpg",
+        "views":  "3736 views",
+        "ago":  "35 days ago",
+        "duration":  "",
+        "isShort":  true
+    },
+    {
+        "id":  "HmHqo5fAqts",
+        "title":  "did naruto really dodge madaras lightspeed light fang attack?",
+        "thumb":  "https://i1.ytimg.com/vi/HmHqo5fAqts/hqdefault.jpg",
+        "views":  "5640 views",
+        "ago":  "37 days ago",
+        "duration":  "",
+        "isShort":  true
+    },
+    {
+        "id":  "ZW9pSr4Qq50",
+        "title":  "What is the actual  color of sasuke\u0027s chidori?",
+        "thumb":  "https://i3.ytimg.com/vi/ZW9pSr4Qq50/hqdefault.jpg",
+        "views":  "3615 views",
+        "ago":  "40 days ago",
+        "duration":  "",
+        "isShort":  true
+    },
+    {
+        "id":  "bX9QJM_2jlc",
+        "title":  "Can hashirama senju defeatvkinshiki otsutsuki?",
+        "thumb":  "https://i3.ytimg.com/vi/bX9QJM_2jlc/hqdefault.jpg",
+        "views":  "4342 views",
+        "ago":  "42 days ago",
+        "duration":  "",
+        "isShort":  true
+    },
+    {
+        "id":  "LAB_8rlex6o",
+        "title":  "Why is konoha the best and ultimate village in all Naruto?",
+        "thumb":  "https://i1.ytimg.com/vi/LAB_8rlex6o/hqdefault.jpg",
+        "views":  "25422 views",
+        "ago":  "44 days ago",
+        "duration":  "",
+        "isShort":  true
+    },
+    {
+        "id":  "uiIm_YLtw0U",
+        "title":  "Was bartolomeo the only one with the barrier barrier fruit?",
+        "thumb":  "https://i2.ytimg.com/vi/uiIm_YLtw0U/hqdefault.jpg",
+        "views":  "2109 views",
+        "ago":  "49 days ago",
+        "duration":  "",
+        "isShort":  true
+    },
+    {
+        "id":  "j9OZyl7CpBE",
+        "title":  "Rocks D. Xebec— Davy’s Final Breath| One Piece AMV",
+        "thumb":  "https://i.ytimg.com/vi/j9OZyl7CpBE/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLDkOjrx5KHmx6DQn9AfGWW8zX90Gw",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "M0PFj8rc68o",
+        "title":  "The Game That Copied Everything of ONE PIECE",
+        "thumb":  "https://i.ytimg.com/vi/M0PFj8rc68o/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLAQHBGtpj2kDNJ-UxR5C46ZhejLIg",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "869JxBKNa0o",
+        "title":  "Bartolomeo will come back for the FINAL WAR",
+        "thumb":  "https://i.ytimg.com/vi/869JxBKNa0o/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLBQ4ROMd1YIQo4GnxXIi43Map9QxA",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "IkbymKq4xws",
+        "title":  "Kaido Was Waiting for Joy Boy to Take Revenge for Rocks?",
+        "thumb":  "https://i.ytimg.com/vi/IkbymKq4xws/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLDzHOLZW0HGvOVWIUJsYLmUcbKIjw",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "cA7dOynozaU",
+        "title":  "These Wild One Piece Theories Make *TOO MUCH SENSE*!",
+        "thumb":  "https://i.ytimg.com/vi/cA7dOynozaU/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLDiiA7u6mtvQwqK0wS2dl2UyzxvxA",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "drs7FJgHiLI",
+        "title":  "Shimotsuki Ryuma - Sword God of WANO AMV | @JuBuAnime",
+        "thumb":  "https://i.ytimg.com/vi/drs7FJgHiLI/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLCjb1Q9fYnTCKcKuqIt3epFxiKV-A",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "KMeSV3iSPnA",
+        "title":  "Joyboy: Betrayed by his own AMV | Drums of Liberation @JuBuAnime ",
+        "thumb":  "https://i.ytimg.com/vi/KMeSV3iSPnA/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLCIr23ORY4EBaptIw_fAYzm0I9n_A",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "A2cRa-xXoug",
+        "title":  "Loki now has Mythical Zoan and wields RAGNIR? | One Piece Chapter 1170!",
+        "thumb":  "https://i.ytimg.com/vi/A2cRa-xXoug/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLADvj1HouUH_6L5wfQbTu-ol57zpw",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "RJUHFTfl-SQ",
+        "title":  "How Blackbeard will Win the final war in One Piece | One Piece Theory",
+        "thumb":  "https://i.ytimg.com/vi/RJUHFTfl-SQ/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLC0wJCZXcNyD-_PeSRGq5g2snqFhg",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "5hm3VkHj_PY",
+        "title":  "Why Anime focused so much on Luffy’s eyes in One Piece 1153 #onepiece1153",
+        "thumb":  "https://i.ytimg.com/vi/5hm3VkHj_PY/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLCORJVYq5QixFtG70qnsSwFYQ6sbg",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "dfW0Gi5fLaA",
+        "title":  "IMU was foreshadowed through every villain of one piece",
+        "thumb":  "https://i.ytimg.com/vi/dfW0Gi5fLaA/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLCaM0KMbv12JUB9YDU0id9usUDlIw",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "kYlb3s5EiIQ",
+        "title":  "Why were Strawhats not affected by Joyboy\u0027s HAKI | One Piece Episode 1153 Joyboy\u0027s Conqueror\u0027s Haki",
+        "thumb":  "https://i.ytimg.com/vi/kYlb3s5EiIQ/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLCpUixrFe5OibU1VKmprUidggNx5Q",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "xlMOElFgijA",
+        "title":  "Top 10 Naruto characters who deserved their own show",
+        "thumb":  "https://i.ytimg.com/vi/xlMOElFgijA/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLDTfBnOA9oosjdat6ckywxAwb-u1w",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "QsxEZdbNEfY",
+        "title":  "The Truth About the Pure Land in Naruto",
+        "thumb":  "https://i.ytimg.com/vi/QsxEZdbNEfY/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLD4X_JaR157O2mXsTHDLL8cRNlEhw",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "-P43tDH5n9o",
+        "title":  "How did Minato unlock KCM in Shippuden?",
+        "thumb":  "https://i.ytimg.com/vi/-P43tDH5n9o/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLAKUwYk--bmY5SMw85TjVVRgROqBw",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "BfMWAyx66Rk",
+        "title":  "Shinjus Will Help Us Save The World From OTSUTSUKI",
+        "thumb":  "https://i.ytimg.com/vi/BfMWAyx66Rk/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLCPYkRQNWV_C_pxw_6jhTHcXU5q6Q",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "yAXEawR20HU",
+        "title":  "How was Uzumaki Clan Destroyed?",
+        "thumb":  "https://i.ytimg.com/vi/yAXEawR20HU/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLBhVnZaVxAhXOEJXRo9q3kWTn2f0g",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "RUK889NzJLo",
+        "title":  "Why Sasuke never used his Dojutsu’s full abilities?",
+        "thumb":  "https://i.ytimg.com/vi/RUK889NzJLo/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLDNwnbzsRnEhefq6TzqM47xmOf47g",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "nCvPFdvBnNo",
+        "title":  "The Complete Naruto Recap! (Naruto + Shippuden)",
+        "thumb":  "https://i.ytimg.com/vi/nCvPFdvBnNo/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLB5JTtQ-UaSO2GjGqiLdhA6AtmTig",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "rJY1LsR9Q80",
+        "title":  "Who can activate jutsu the fastest? ( Not Kakashi )",
+        "thumb":  "https://i.ytimg.com/vi/rJY1LsR9Q80/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLA9v4-TRgyn3VkayrbR0YnQ_c4cfw",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "iRiCWg9P24M",
+        "title":  "How Strong is Jiraiya? | Jiraiya Power Level | In-depth Analysis",
+        "thumb":  "https://i.ytimg.com/vi/iRiCWg9P24M/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLDjNidBTq7HM9WEPiVqeNZwdM7djA",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "IflhtNZs14I",
+        "title":  "THE TRUTH ABOUT KAMUI | KAMUI EXPLAINED IN DEPTH",
+        "thumb":  "https://i.ytimg.com/vi/IflhtNZs14I/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLBwzjV3FrNyCE0H1QomV39Z9GYuRg",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "Uy6rPJbDg8A",
+        "title":  "Who is the Strongest Senjutsu User? Let\u0027s rank them!",
+        "thumb":  "https://i.ytimg.com/vi/Uy6rPJbDg8A/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLA5khoHJEZayfqRWi7n5Lpxb-4ojA",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "edWWs1KiJ-4",
+        "title":  "SHIBAI OTSUTSUKI IS WAY STRONGER THAN YOU THINK",
+        "thumb":  "https://i.ytimg.com/vi/edWWs1KiJ-4/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLB4KOlmQ2x0d5uoxRjH7BJCd5rWGQ",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    },
+    {
+        "id":  "EBh-yeZ5GlE",
+        "title":  "MOMOSHIKI IS WAY STRONGER THAN YOU THINK!",
+        "thumb":  "https://i.ytimg.com/vi/EBh-yeZ5GlE/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB\u0026rs=AOn4CLC5rgJzzPLWVRuZRsjWhIhgrYeoUA",
+        "views":  "",
+        "ago":  "",
+        "duration":  "",
+        "isShort":  false
+    }
+];
+    function openPlayer(videoId) {
+      var overlay = document.getElementById('player-overlay');
+      var wrap = document.getElementById('player-wrap');
+      var ytBtn = document.getElementById('watch-on-yt');
+      var yt = 'https://www.youtube.com/watch?v=' + videoId;
+      wrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+      ytBtn.href = yt;
+      overlay.classList.add('show');
+    }
+    function closePlayer() {
+      document.getElementById('player-overlay').classList.remove('show');
+      document.getElementById('player-wrap').innerHTML = '';
+    }
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePlayer(); });
+
+    function renderGrid(list) {
+      var g = document.getElementById('video-grid');
+      if (!list || !list.length) {
+        g.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666">No videos</div>';
+        return;
+      }
+      g.innerHTML = '';
+      list.forEach(function(v) {
+        var d = document.createElement('div');
+        d.className = 'yt-vid';
+        d.innerHTML = '<div class="thumb"><img src="' + v.thumb + '" alt="" loading="lazy"></div><div class="info"><div class="text"><div class="title">' + v.title + '</div><div class="meta">' + (v.views||'') + (v.views&&v.ago?' \u00b7 ':'') + (v.ago||'') + '</div></div></div>';
+        d.addEventListener('click', function(){ openPlayer(v.id); });
+        g.appendChild(d);
+      });
+    }
+
+    function renderShorts(list) {
+      var shelf = document.getElementById('shorts-shelf');
+      var section = document.getElementById('shorts-section');
+      if (!list || !list.length) {
+        document.getElementById('tab-shorts').style.display = 'none';
+        return;
+      }
+      section.style.display = 'block';
+      shelf.innerHTML = '';
+      list.forEach(function(v) {
+        var d = document.createElement('div');
+        d.className = 'short-card';
+        d.innerHTML = '<div class="thumb"><img src="' + v.thumb + '" alt="" loading="lazy"></div><div class="info"><div class="title">' + v.title + '</div><div class="meta">' + (v.views||'') + (v.views&&v.ago?' \u00b7 ':'') + (v.ago||'') + '</div></div>';
+        d.addEventListener('click', function(){ openPlayer(v.id); });
+        shelf.appendChild(d);
+      });
+    }
+
+    function switchTab(tab) {
+      var videos = document.getElementById('tab-videos');
+      var shorts = document.getElementById('tab-shorts');
+      videos.classList.toggle('active', tab === 'videos');
+      shorts.classList.toggle('active', tab === 'shorts');
+      document.getElementById('videos').style.display = tab === 'videos' ? 'block' : 'none';
+      document.getElementById('shorts-section').style.display = tab === 'shorts' ? 'block' : 'none';
+    }
+
+    renderGrid(VIDEOS.filter(function(x){ return !x.isShort; }));
+    renderShorts(VIDEOS.filter(function(x){ return x.isShort; }));
+  </script>
+  </div>
 </body>
 </html>
