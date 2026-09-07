@@ -16,8 +16,13 @@
         if (!m) return;
         var art = grid.querySelector('[data-anime="' + i + '"] .card-art');
         if (art && m.coverImage) {
-          art.innerHTML = '<img src="' + VT.esc(m.coverImage.extraLarge || m.coverImage.large) + '" alt="" loading="lazy">' +
-            (m.averageScore ? '<div class="card-badges"><span class="badge gold">★ ' + m.averageScore + "</span></div>" : "");
+          VT.setArt(art, m.coverImage.extraLarge || m.coverImage.large);
+          if (m.averageScore) {
+            var b = document.createElement("div");
+            b.className = "card-badges";
+            b.innerHTML = '<span class="badge gold">★ ' + m.averageScore + "</span>";
+            art.appendChild(b);
+          }
         }
       }).catch(function () {});
     });

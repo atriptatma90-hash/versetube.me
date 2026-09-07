@@ -43,7 +43,7 @@ var VT_DATA = (function () {
   ];
   var ARCS = [
     { title: "Land of Waves", series: "Naruto", wiki: "naruto", page: "Prologue — Land of Waves", keys: ["zabuza", "haku", "land of waves"], blurb: "Team 7's first real mission: a demon swordsman, a masked hunter, and a bridge named Great Naruto." },
-    { name: null, title: "Chunin Exams", series: "Naruto", wiki: "naruto", page: "Chunin Exams (Arc)", keys: ["chunin", "orochimaru"], blurb: "Forest of Death, Neji vs fate, Gaara's sand — and Orochimaru's invasion plan." },
+    { title: "Chunin Exams", series: "Naruto", wiki: "naruto", page: "Chunin Exams (Arc)", keys: ["chunin", "orochimaru"], blurb: "Forest of Death, Neji vs fate, Gaara's sand — and Orochimaru's invasion plan." },
     { title: "Konoha Crush", series: "Naruto", wiki: "naruto", page: "Konoha Crush (Arc)", keys: ["hiruzen", "konoha crush"], blurb: "The Sand-Sound invasion. Hiruzen's last stand against his own student." },
     { title: "Sasuke Recovery Mission", series: "Naruto", wiki: "naruto", page: "Sasuke Recovery Mission", keys: ["sasuke", "valley of the end"], blurb: "Shikamaru leads the rookie squad. Naruto vs Sasuke at the Valley of the End." },
     { title: "Pain's Assault", series: "Naruto", wiki: "naruto", page: "Pain's Assault (Arc)", keys: ["pain", "nagato", "hinata"], blurb: "Shinra Tensei levels Konoha. Sage Mode Naruto returns to face all Six Paths." },

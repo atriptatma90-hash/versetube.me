@@ -38,7 +38,7 @@
       VT.fandomImage(c.wiki, c.page, 400).then(function (r) {
         if (r.img) {
           var art = grid.querySelector('[data-char="' + c._i + '"] .card-art');
-          if (art) art.innerHTML = '<img src="' + VT.esc(r.img) + '" alt="" loading="lazy">';
+          if (art) VT.setArt(art, r.img);
         }
       }).catch(function () {}).then(function () { active--; next(); });
       next();
@@ -65,7 +65,7 @@
       var img = rs[0].img, bio = rs[1].character, story = rs[2];
       var anyLive = !!(rs[0].img || bio || (story && story.text));
       if (!anyLive) VT.toast("Wiki offline — showing saved snapshot.");
-      var rel = VT.relatedVideos([c.name].concat(c.keys || []), 5);
+      var rel = VT.relatedVideos([c.name].concat(c.keys || []), 5, [c.series]);
       var facts = [
         ["Series", c.series],
         ["Wiki", c.wiki + ".fandom.com"],

@@ -117,7 +117,7 @@ select,input[type="text"],textarea{background-color:var(--soft);border:1px solid
 .media-card:hover{transform:translateY(-3px);border-color:var(--accent)}
 .card-art{position:relative;aspect-ratio:16/9;background:var(--soft);overflow:hidden}
 .card-art.portrait{aspect-ratio:3/4}
-.card-art img{width:100%;height:100%;object-fit:cover;display:block}
+.card-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border:0}
 .card-art .letter-fallback{position:absolute;inset:0;display:grid;place-items:center;font-size:56px;font-weight:800;color:var(--faint)}
 .card-badges{position:absolute;top:8px;left:8px;display:flex;gap:6px}
 .badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;background:#000000b3;color:#fff}
@@ -149,7 +149,7 @@ dialog::backdrop{background:#0009;backdrop-filter:blur(3px)}
 .detail-shell{display:flex;flex-direction:column;max-height:90vh}
 .detail-header{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;padding:28px 64px 20px 28px}
 .detail-art{height:200px;border-radius:10px;overflow:hidden;background:var(--soft);position:relative}
-.detail-art img{width:100%;height:100%;object-fit:cover;display:block}
+.detail-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border:0}
 .detail-platform{font-size:13px;color:var(--accent);margin-bottom:6px;font-weight:700;letter-spacing:1px}
 .detail-heading h2{font-size:22px}
 .detail-heading p{font-size:14px;margin-top:8px}

@@ -39,7 +39,7 @@
       var pageUrl = (sum && sum.pageUrl) || rs[0].pageUrl ||
         ("https://" + a.wiki + ".fandom.com/wiki/" + encodeURIComponent(a.page.replace(/ /g, "_")));
       if (!sum.text) VT.toast("Story text is offline — open the full wiki article instead.");
-      var rel = VT.relatedVideos([a.title].concat(a.keys || []), 5);
+      var rel = VT.relatedVideos([a.title].concat(a.keys || []), 5, [a.series]);
       VT.openDetail({
         eyebrow: a.series.toUpperCase() + " · STORY", title: a.title, sub: a.blurb,
         img: img,

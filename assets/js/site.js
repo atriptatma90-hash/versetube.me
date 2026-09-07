@@ -98,7 +98,14 @@ var VT = (function () {
   function wikitextSummary(wikitext, maxChars) {
     var t = String(wikitext || "");
     t = t.replace(/<!--[\s\S]*?-->/g, "");
-    t = t.replace(/\{\{[^{}]*\}\}/g, " ").replace(/\{\{[^{}]*\}\}/g, " ");
+    // {{Nihongo|English|kanji|romaji}} holds the readable title — keep it.
+    t = t.replace(/\{\{[Nn]ihongo\|([^}|{\n]+)[^}]*\}\}/g, "$1");
+    // File/Image/Category links carry no article text — drop them whole.
+    t = t.replace(/\[\[(File|Image|Category|Special|Help|Template):[^\]]*\]\]/gi, " ");
+    // Strip remaining templates iteratively (infoboxes nest).
+    var prev;
+    do { prev = t; t = t.replace(/\{\{[^{}]*\}\}/g, " "); } while (t !== prev);
+    t = t.replace(/__[A-Z]+__/g, " ");
     t = t.replace(/<ref[^>]*>[\s\S]*?<\/ref\s*>/gi, " ").replace(/<ref[^/]*\/>/gi, " ");
     t = t.replace(/<\/?[a-z][^>]*>/gi, " ");
     t = t.replace(/\[\^[^\]]*\]/g, " ");
@@ -181,13 +188,17 @@ var VT = (function () {
     return jikanQueue.then(run);
   }
   /* ---------- videos linked to a topic (matches the channel's own titles) ---------- */
-  function relatedVideos(keys, limit) {
-    var ks = (keys || []).map(function (k) { return String(k).toLowerCase(); });
-    var scored = (window.VIDEOS || []).map(function (v) {
-      var t = (v.title || "").toLowerCase(), score = 0;
-      ks.forEach(function (k) { if (k && t.indexOf(k) > -1) score += k.length > 5 ? 2 : 1; });
-      return { v: v, score: score };
-    }).filter(function (x) { return x.score > 0; });
+  function relatedVideos(keys, limit, fallbackKeys) {
+    function scoreFor(ks) {
+      var ksl = (ks || []).map(function (k) { return String(k).toLowerCase(); });
+      return (window.VIDEOS || []).map(function (v) {
+        var t = (v.title || "").toLowerCase(), score = 0;
+        ksl.forEach(function (k) { if (k && t.indexOf(k) > -1) score += k.length > 5 ? 2 : 1; });
+        return { v: v, score: score };
+      }).filter(function (x) { return x.score > 0; });
+    }
+    var scored = scoreFor(keys);
+    if (!scored.length && fallbackKeys) scored = scoreFor(fallbackKeys);
     scored.sort(function (a, b) { return b.score - a.score; });
     return scored.slice(0, limit || 4).map(function (x) { return x.v; });
   }
@@ -204,6 +215,19 @@ var VT = (function () {
     });
   }
 
+  /* Progressive art: the letter fallback stays visible until the live
+     image actually loads (Fandom's CDN 403s hotlinks that send a
+     Referer, so images load with no-referrer; failures keep the letter). */
+  function setArt(container, url) {
+    if (!container || !url) return;
+    var im = new Image();
+    im.alt = "";
+    im.loading = "lazy";
+    try { im.referrerPolicy = "no-referrer"; } catch (e) {}
+    im.addEventListener("load", function () { container.appendChild(im); });
+    im.src = url;
+  }
+
   /* ---------- tabbed detail dialog (DownloadVerse-style) ---------- */
   function openDetail(o) {
     // o: {eyebrow, title, sub, img, facts[[k,v]], tabs:[{id,label,html}], sourceUrl, sourceLabel, cached}
@@ -213,9 +237,8 @@ var VT = (function () {
     document.getElementById("detailTitle").textContent = o.title || "";
     document.getElementById("detailSub").textContent = o.sub || "";
     var art = document.getElementById("detailArt");
-    art.innerHTML = o.img
-      ? '<img src="' + esc(o.img) + '" alt="">'
-      : '<div class="letter-fallback">' + esc((o.title || "?").charAt(0)) + "</div>";
+    art.innerHTML = '<div class="letter-fallback">' + esc((o.title || "?").charAt(0)) + "</div>";
+    if (o.img) setArt(art, o.img);
     var facts = document.getElementById("detailFacts");
     facts.innerHTML = (o.facts || []).map(function (f) {
       return '<div class="fact"><span>' + esc(f[0]) + "</span><strong>" + esc(f[1]) + "</strong></div>";
@@ -308,6 +331,6 @@ var VT = (function () {
     wikitextSummary: wikitextSummary, fandomSummary: fandomSummary,
     anilist: anilist, anilistAnime: anilistAnime, anilistCharacter: anilistCharacter,
     jikan: jikan, relatedVideos: relatedVideos, miniVideoHTML: miniVideoHTML, bindMiniVideos: bindMiniVideos,
-    openDetail: openDetail, initDialog: initDialog, Player: Player, initNav: initNav
+    openDetail: openDetail, initDialog: initDialog, Player: Player, initNav: initNav, setArt: setArt
   };
 })();

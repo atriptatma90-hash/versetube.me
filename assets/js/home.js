@@ -53,7 +53,7 @@
         VT.fandomImage(c.wiki, c.page, 400).then(function (r) {
           if (!r.img) return;
           var card = cg.querySelector('[data-char="' + i + '"] .card-art');
-          if (card) card.innerHTML = '<img src="' + VT.esc(r.img) + '" alt="" loading="lazy">';
+          if (card) VT.setArt(card, r.img);
         }).catch(function () {});
       });
     }
