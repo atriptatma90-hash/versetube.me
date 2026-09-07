@@ -1,18 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="verse">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="VerseTube — anime stories, characters and videos. Naruto and One Piece wiki,_lore and YouTube videos in one hub.">
+<meta name="description" content="Naruto, Naruto Shippuden, Boruto and One Piece — live scores, episodes, genres and synopses.">
 <link rel="icon" type="image/png" href="/favicon.png">
-<title>VerseTube — Anime Stories, Characters & Videos</title>
+<title>Anime — VerseTube</title>
 <link rel="stylesheet" href="/assets/css/verse.css">
 <script src="/assets/js/videos.js" defer></script>
 <script src="/assets/js/data.js" defer></script>
 <script src="/assets/js/site.js" defer></script>
 <script src="/assets/js/facts.js" defer></script>
-<script src="/assets/js/home.js" defer></script>
+<script src="/assets/js/anime.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -22,7 +22,7 @@
 <div class="nav-heading">BROWSE</div>
 <nav class="navigation" aria-label="Main navigation">
 <a class="nav-button" data-page="home" href="/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 21V9l8-6 8 6v12h-6v-7h-4v7H4z"/></svg>Home</a>
-<a class="nav-button" data-page="videos" href="/videos.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Videos<span class="nav-count" id="navVideoCount">0</span></a>
+<a class="nav-button" data-page="videos" href="/videos.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Videos</a>
 <a class="nav-button" data-page="anime" href="/anime.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 9h5M2 15h5M17 9h5M17 15h5"/></svg>Anime</a>
 <a class="nav-button" data-page="characters" href="/characters.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5M16 4.6a3.5 3.5 0 0 1 0 6.8M17.5 15.2c2 .6 3.5 2.1 4 4.8"/></svg>Characters</a>
 <a class="nav-button" data-page="stories" href="/stories.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>Stories</a>
@@ -35,7 +35,7 @@
 </aside>
 <div class="workspace">
 <header class="topbar">
-<div class="breadcrumb"><strong id="crumbTitle">Home</strong><span class="crumb-sub">stories · characters · videos</span></div>
+<div class="breadcrumb"><strong id="crumbTitle">Anime</strong><span class="crumb-sub" id="animeCount"></span></div>
 <div class="topbar-actions">
 <input id="topSearch" class="search-box" type="text" placeholder="Search characters…" aria-label="Search characters">
 <select id="theme" class="theme-select" aria-label="Appearance"><option value="verse">Verse</option><option value="ocean">Ocean</option><option value="black">Black</option><option value="white">White</option></select>
@@ -43,35 +43,24 @@
 </div>
 </header>
 <main id="main">
-<div class="intro">
-<div>
-<p class="eyebrow">ANIME YOUTUBER · WIKI · VIDEOS</p>
-<h1>Every story behind the videos.</h1>
-<p>Character files, anime intel and full story arcs for Naruto and One Piece — scraped live from the wikis, matched to VerseTube videos.</p>
-<div class="actions-row">
-<a class="button primary" href="/videos.html">Watch videos</a>
-<a class="button" href="/characters.html">Explore characters</a>
+<div class="intro"><div>
+<p class="eyebrow">ANIME INTEL · LIVE</p>
+<h1>Anime Index</h1>
+<p>Scores, episodes, genres and synopses load live from AniList and MyAnimeList. Tap a series for the full file plus matching VerseTube videos.</p>
+</div></div>
+<div class="toolbar">
+<div class="filter-tabs" id="seriesTabs">
+<button data-series="all" class="active">All</button>
+<button data-series="naruto">Naruto</button>
+<button data-series="onepiece">One Piece</button>
 </div>
 </div>
-<div class="hero-art" aria-hidden="true">⛩️</div>
-</div>
-<div class="section-top"><div><h2>Latest videos</h2><p>Fresh from the channel.</p></div><a class="section-link" href="/videos.html">All videos →</a></div>
-<div class="card-grid" id="homeVideos">
+<div class="card-grid" id="animeGrid">
 <div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div></div>
 <div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div></div>
 <div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div></div>
 </div>
-<div class="section-top"><div><h2>Shorts</h2><p>Quick hits.</p></div><a class="section-link" href="/videos.html#shorts">All shorts →</a></div>
-<div class="shorts-shelf" id="homeShorts"></div>
-<div class="section-top"><div><h2>Start with a legend</h2><p>Character files, live from the wikis.</p></div><a class="section-link" href="/characters.html">All characters →</a></div>
-<div class="card-grid" id="homeChars"></div>
-<div class="section-top"><div><h2>The wiki</h2><p>Anime intel, character files, story arcs.</p></div></div>
-<div class="card-grid">
-<div class="panel"><h3>Anime</h3><p style="font-size:13px;margin:8px 0 14px">Scores, episodes, genres and synopses — live from AniList and MyAnimeList.</p><a class="button" href="/anime.html">Open anime index</a></div>
-<div class="panel"><h3>Characters</h3><p style="font-size:13px;margin:8px 0 14px">Bios and story summaries for 24 legends, live from the fandom wikis.</p><a class="button" href="/characters.html">Open characters</a></div>
-<div class="panel"><h3>Stories</h3><p style="font-size:13px;margin:8px 0 14px">Full arc breakdowns — Land of Waves to Wano — with linked videos.</p><a class="button" href="/stories.html">Open stories</a></div>
-</div>
-<p class="footnote">Anime data: <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a> · <a href="https://myanimelist.net" target="_blank" rel="noopener">MyAnimeList</a> (via Jikan). Wiki summaries: <a href="https://naruto.fandom.com" target="_blank" rel="noopener">Naruto Wiki</a> · <a href="https://onepiece.fandom.com" target="_blank" rel="noopener">One Piece Wiki</a> (CC-BY-SA, trimmed with links to full articles).</p>
+<p class="footnote">Live data: <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a> · <a href="https://myanimelist.net" target="_blank" rel="noopener">MyAnimeList</a>. Cached for a week; snapshots show if the APIs are down.</p>
 </main>
 </div>
 </div>
