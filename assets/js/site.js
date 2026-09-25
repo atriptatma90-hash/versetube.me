@@ -137,7 +137,13 @@ var VT = (function () {
 
   /* ---------- AniList (primary anime/character API, no key, CORS open) ---------- */
   function anilist(query, variables, cacheKey) {
-    var key = "vt:anilist:" + (cacheKey || (query + JSON.stringify(variables || {})));
+    // AniList's gateway returns 404 on explicit JSON nulls in variables
+    // (e.g. {s:"Naruto", id:null}) — omitted nullable vars are fine, so strip them
+    var vars = {};
+    Object.keys(variables || {}).forEach(function (k) {
+      if (variables[k] !== null && variables[k] !== undefined) vars[k] = variables[k];
+    });
+    var key = "vt:anilist:" + (cacheKey || (query + JSON.stringify(vars)));
     if (cacheKey !== null) {
       var hit = cacheGet(key);
       if (hit) return Promise.resolve({ data: hit, cached: true });
@@ -145,7 +151,7 @@ var VT = (function () {
     return fetch("https://graphql.anilist.co", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({ query: query, variables: variables || {} })
+      body: JSON.stringify({ query: query, variables: vars })
     }).then(function (r) {
       if (!r.ok) throw new Error("AniList HTTP " + r.status);
       return r.json();

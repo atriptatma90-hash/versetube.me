@@ -8,7 +8,9 @@
     return '<div class="card-art portrait"><div class="letter-fallback">' + VT.esc(letter) + "</div></div>";
   }
   function titleOf(m) {
-    return (m.title && (m.title.english || m.title.romaji)) || "Untitled";
+    var t = m && m.title;
+    if (typeof t === "string") return t || "Untitled";
+    return (t && (t.english || t.romaji)) || "Untitled";
   }
   function cardHTML(m, i) {
     var meta = [];
@@ -31,7 +33,11 @@
   function renderCards(grid, list) {
     grid.innerHTML = list.map(cardHTML).join("");
     grid.querySelectorAll("[data-media]").forEach(function (el) {
-      el.addEventListener("click", function () { openMedia(list[+el.getAttribute("data-media")]); });
+      el.addEventListener("click", function () {
+        var m = list[+el.getAttribute("data-media")];
+        if (m && m.id) openMedia(m);
+        else if (m) openCurated(m); // curated fallback entry (no live data)
+      });
     });
     list.forEach(function (m, i) {
       var art = grid.querySelector('[data-media="' + i + '"] .card-art');
@@ -49,7 +55,25 @@
     var grid = document.getElementById("animeGrid");
     if (!grid) return;
     if (mode === "featured") {
-      renderCards(grid, VT_DATA.ANIME || []);
+      // curated picks — hydrate each from live AniList so covers/scores load;
+      // one retry covers transient API blips, plain curated cards if still down
+      var curated = VT_DATA.ANIME || [];
+      showSkeleton(grid);
+      var hydrate = function (a) {
+        return VT.anilistAnime(a.search).then(function (r) {
+          return r.anime && r.anime.id ? r.anime : null;
+        }).catch(function () {
+          return new Promise(function (ok) { setTimeout(ok, 900); }).then(function () {
+            return VT.anilistAnime(a.search, null).then(function (r) {
+              return r.anime && r.anime.id ? r.anime : null;
+            }).catch(function () { return null; });
+          });
+        });
+      };
+      Promise.all(curated.map(hydrate)).then(function (list) {
+        var live = list.filter(Boolean);
+        renderCards(grid, live.length ? live : curated);
+      });
       return;
     }
     showSkeleton(grid);

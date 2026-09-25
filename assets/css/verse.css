@@ -149,13 +149,14 @@ dialog::backdrop{background:#0009;backdrop-filter:blur(3px)}
 .detail-tabs button{border:0;border-bottom:2px solid transparent;background:none;padding:12px 2px;font-size:14px;color:var(--muted)}
 .detail-tabs button[aria-selected="true"]{border-bottom-color:var(--accent);color:var(--accent);font-weight:700}
 .detail-body{padding:24px 28px;overflow-y:auto;min-height:200px}
+.detail-facts{padding:0 28px 2px}
 .detail-body h4{margin:18px 0 8px;font-size:14px;letter-spacing:.5px}
 .detail-body h4:first-child{margin-top:0}
 .fact-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
 .fact{padding:12px;background:var(--soft);border-radius:8px;min-width:0}
 .fact span{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
 .fact strong{font-size:14px;font-weight:600}
-.wiki-text{font-size:14px;line-height:1.75;white-space:pre-line}
+.wiki-text{font-size:15px;line-height:1.7;white-space:pre-line}
 .wiki-text p{margin-bottom:10px}
 .mini-video{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;cursor:pointer}
 .mini-video:hover{background:var(--soft)}
