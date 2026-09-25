@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="All VerseTube videos and shorts — Naruto and One Piece stories, theories and breakdowns.">
+<meta name="description" content="Free 4K anime wallpapers — search, preview and download from the 4KWallVerse collection.">
 <link rel="icon" type="image/png" href="/favicon.png">
-<title>Videos — VerseTube</title>
+<title>Wallpapers — VerseTube</title>
 <link rel="stylesheet" href="/assets/css/verse.css">
 <script src="/assets/js/videos.js" defer></script>
 <script src="/assets/js/data.js" defer></script>
 <script src="/assets/js/site.js" defer></script>
 <script src="/assets/js/facts.js" defer></script>
-<script src="/assets/js/videos-page.js" defer></script>
+<script src="/assets/js/wallpapers.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -36,7 +36,7 @@
 </aside>
 <div class="workspace">
 <header class="topbar">
-<div class="breadcrumb"><strong id="crumbTitle">Videos</strong><span class="crumb-sub" id="videoCount"></span></div>
+<div class="breadcrumb"><strong id="crumbTitle">Wallpapers</strong><span class="crumb-sub" id="wallCount"></span></div>
 <div class="topbar-actions">
 <input id="topSearch" class="search-box" type="text" placeholder="Search characters…" aria-label="Search characters">
 <select id="theme" class="theme-select" aria-label="Appearance"><option value="verse">Verse</option><option value="ocean">Ocean</option><option value="black">Black</option><option value="white">White</option></select>
@@ -45,46 +45,51 @@
 </header>
 <main id="main">
 <div class="intro"><div>
-<p class="eyebrow">THE CHANNEL</p>
-<h1>Videos & Shorts</h1>
-<p>Every VerseTube upload. Tap any card to watch in-page, or open it on YouTube.</p>
+<p class="eyebrow">4KWALLVERSE · FREE 4K</p>
+<h1>Wallpapers</h1>
+<p>Every wallpaper from the 4KWallVerse collection — tap any card for a full preview, download in one click. Landscape and phone wallpapers update live.</p>
 </div></div>
 <div class="toolbar">
-<div class="filter-tabs" id="typeTabs">
-<button data-mode="videos" class="active">Videos</button>
-<button data-mode="shorts">Shorts</button>
-<button data-mode="all">All</button>
+<div class="filter-tabs" id="wallTabs">
+<button type="button" data-section="main" class="active">Wallpapers <span class="tab-count" id="cntMain"></span></button>
+<button type="button" data-section="fan">Fan Service <span class="tab-count" id="cntFan"></span></button>
 </div>
-<div style="display:flex;gap:10px;align-items:center">
-<input id="videoSearch" class="search-box" type="text" placeholder="Filter videos…" aria-label="Filter videos" style="width:200px">
-<div class="layout-switch" role="group" aria-label="Layout">
-<button data-layout="grid" aria-pressed="true">Grid</button>
-<button data-layout="list" aria-pressed="false">List</button>
+<div class="filter-tabs" id="wallTools">
+<button type="button" id="shuffleBtn">↻ Shuffle</button>
+<input id="wallSearch" class="search-box" type="text" placeholder="Search wallpapers…" aria-label="Search wallpapers" style="width:220px">
 </div>
 </div>
+<div class="wall-loading" id="wallLoading"><div class="bar"></div>Loading wallpapers…</div>
+<div class="empty-state" id="wallErr" hidden>
+<div class="big">⚠️</div>
+<p id="wallErrMsg">Couldn’t reach the gallery.</p>
+<button class="button" id="wallRetry" type="button" style="margin-top:14px">Try again</button>
 </div>
-<div class="card-grid" id="videoGrid"></div>
-<p class="footnote">New here? Start with the wiki: <a href="/characters.html">characters</a> · <a href="/stories.html">stories</a> · <a href="/anime.html">anime</a>.</p>
+<div class="empty-state" id="wallEmpty" hidden>
+<div class="big">🖼️</div>
+<p>Nothing found — try a different search!</p>
+</div>
+<section class="wall-group" id="grpLand" hidden>
+<div class="wall-group-head" id="headLand">16:9 · Landscape</div>
+<div class="card-grid wall-grid" id="gridLand"></div>
+</section>
+<section class="wall-group" id="grpPort" hidden>
+<div class="wall-group-head" id="headPort">9:16 · Portrait</div>
+<div class="card-grid wall-grid portrait" id="gridPort"></div>
+</section>
+<p class="footnote">Wallpapers provided by <a href="https://4kwallverse.vercel.app" target="_blank" rel="noopener">4KWallVerse</a> · download links are signed fresh on every visit.</p>
 </main>
 </div>
 </div>
-<dialog id="detailDialog" aria-labelledby="detailTitle">
-<div class="detail-shell">
-<button class="dialog-close" id="detailClose" aria-label="Close details">×</button>
-<div class="detail-header">
-<div class="detail-art" id="detailArt"></div>
-<div class="detail-heading"><div class="detail-platform" id="detailEyebrow"></div><h2 id="detailTitle"></h2><p id="detailSub"></p></div>
+<div class="wall-lb" id="wallLb" role="dialog" aria-modal="true" aria-label="Wallpaper preview">
+<button class="wall-lb-close" id="lbClose" aria-label="Close preview">×</button>
+<button class="wall-lb-nav prev" id="lbPrev" aria-label="Previous wallpaper">‹</button>
+<button class="wall-lb-nav next" id="lbNext" aria-label="Next wallpaper">›</button>
+<div class="wall-lb-stage"><img id="lbImg" alt="Wallpaper preview"></div>
+<div class="wall-lb-bar">
+<div class="wall-lb-info"><strong id="lbName"></strong><span id="lbMeta"></span></div>
+<a class="button primary" id="lbDl" href="#" target="_blank" rel="noopener">⬇ Download 4K</a>
 </div>
-<div class="detail-body" style="padding-top:0"><div class="fact-grid" id="detailFacts"></div></div>
-<div class="detail-tabs" id="detailTabs" role="tablist"></div>
-<div class="detail-body" id="detailBody"></div>
-<footer class="detail-footer"><div id="detailFoot"></div></footer>
-</div>
-</dialog>
-<div class="player-overlay" id="playerOverlay">
-<button class="dialog-close" id="playerClose" aria-label="Close player" style="top:16px;left:16px;right:auto">×</button>
-<div class="player-wrap" id="playerWrap"></div>
-<a id="watchOnYt" class="button primary" style="margin-top:16px" href="#" target="_blank" rel="noopener">Watch on YouTube</a>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
 </body>
