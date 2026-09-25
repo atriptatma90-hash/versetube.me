@@ -4,10 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="Naruto, Naruto Shippuden, Boruto and One Piece — live scores, episodes, genres and synopses.">
+<title>Anime Database — Browse, Search & Live Scores | VerseTube</title>
+<meta name="description" content="Browse every anime: trending and popular series with live MyAnimeList scores, episodes, genres and synopses — from Naruto and One Piece to the newest seasonal titles.">
+<meta name="keywords" content="anime database, anime index, browse anime, trending anime, popular anime, anime scores, anime episodes, anime wiki">
+<link rel="canonical" href="https://versetube.me/anime.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VerseTube">
+<meta property="og:title" content="Anime Database — Browse, Search & Live Scores | VerseTube">
+<meta property="og:description" content="Browse every anime: trending and popular series with live scores, episodes, genres and synopses.">
+<meta property="og:url" content="https://versetube.me/anime.html">
+<meta property="og:image" content="https://versetube.me/logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Anime Database — Browse, Search & Live Scores | VerseTube">
+<meta name="twitter:description" content="Browse every anime: trending and popular series with live scores, episodes, genres and synopses.">
+<meta name="twitter:image" content="https://versetube.me/logo.png">
 <link rel="icon" type="image/png" href="/favicon.png">
-<title>Anime — VerseTube</title>
 <link rel="stylesheet" href="/assets/css/verse.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://versetube.me/"},{"@type":"ListItem","position":2,"name":"Anime Database","item":"https://versetube.me/anime.html"}]}</script>
 <script src="/assets/js/videos.js" defer></script>
 <script src="/assets/js/data.js" defer></script>
 <script src="/assets/js/site.js" defer></script>
@@ -18,15 +31,15 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="shell">
 <aside class="sidebar">
-<a class="brand" href="/"><img src="/logo.png" alt=""><span>VerseTube<small>ANIME · WIKI · VIDEOS</small></span></a>
+<a class="brand" href="/"><img src="/logo.png" alt="VerseTube logo"><span>VerseTube<small>ANIME WIKI · LORE · 4K WALLPAPERS</small></span></a>
 <div class="nav-heading">BROWSE</div>
 <nav class="navigation" aria-label="Main navigation">
 <a class="nav-button" data-page="home" href="/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 21V9l8-6 8 6v12h-6v-7h-4v7H4z"/></svg>Home</a>
-<a class="nav-button" data-page="videos" href="/videos.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Videos</a>
-<a class="nav-button" data-page="wallpapers" href="/wallpapers.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>Wallpapers</a>
 <a class="nav-button" data-page="anime" href="/anime.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 9h5M2 15h5M17 9h5M17 15h5"/></svg>Anime</a>
 <a class="nav-button" data-page="characters" href="/characters.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5M16 4.6a3.5 3.5 0 0 1 0 6.8M17.5 15.2c2 .6 3.5 2.1 4 4.8"/></svg>Characters</a>
 <a class="nav-button" data-page="stories" href="/stories.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>Stories</a>
+<a class="nav-button" data-page="wallpapers" href="/wallpapers.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>Wallpapers</a>
+<a class="nav-button" data-page="videos" href="/videos.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Videos<span class="nav-count" id="navVideoCount">0</span></a>
 </nav>
 <div class="sidebar-bottom">
 <div class="mini-panel"><span class="eyebrow">DID YOU KNOW</span><p id="factLine">Loading anime facts…</p></div>
@@ -39,29 +52,31 @@
 <div class="breadcrumb"><strong id="crumbTitle">Anime</strong><span class="crumb-sub" id="animeCount"></span></div>
 <div class="topbar-actions">
 <input id="topSearch" class="search-box" type="text" placeholder="Search characters…" aria-label="Search characters">
-<select id="theme" class="theme-select" aria-label="Appearance"><option value="verse">Verse</option><option value="ocean">Ocean</option><option value="black">Black</option><option value="white">White</option></select>
+<select id="theme" class="theme-select" aria-label="Appearance"><option value="verse">Verse</option><option value="black">Black</option><option value="white">White</option></select>
 <a class="yt-link" href="https://www.youtube.com/@TheVerseTube" target="_blank" rel="noopener">● YouTube</a>
 </div>
 </header>
 <main id="main">
 <div class="intro"><div>
-<p class="eyebrow">ANIME INTEL · LIVE</p>
-<h1>Anime Index</h1>
-<p>Scores, episodes, genres and synopses load live from AniList and MyAnimeList. Tap a series for the full file plus matching VerseTube videos.</p>
+<p class="eyebrow">ANIME DATABASE · LIVE</p>
+<h1>Browse every anime</h1>
+<p>The whole catalog — trending and popular series with live scores, episodes, genres and synopses from AniList and MyAnimeList. Tap any title for its full file: synopsis, characters and matching VerseTube videos.</p>
 </div></div>
 <div class="toolbar">
 <div class="filter-tabs" id="seriesTabs">
-<button data-series="all" class="active">All</button>
-<button data-series="naruto">Naruto</button>
-<button data-series="onepiece">One Piece</button>
+<button data-series="featured" class="active">Featured</button>
+<button data-series="trending">Trending</button>
+<button data-series="popular">Popular</button>
+<button data-series="search">Search</button>
 </div>
+<input id="animeSearch" class="search-box" type="text" placeholder="Search any anime…" aria-label="Search anime" style="width:220px">
 </div>
 <div class="card-grid" id="animeGrid">
-<div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div></div>
-<div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div></div>
-<div><div class="skel" style="aspect-ratio:16/9"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div></div>
+<div><div class="skel" style="aspect-ratio:3/4"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div></div>
+<div><div class="skel" style="aspect-ratio:3/4"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div></div>
+<div><div class="skel" style="aspect-ratio:3/4"></div><div class="skel" style="height:14px;margin:10px 0 6px;width:90%"></div></div>
 </div>
-<p class="footnote">Live data: <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a> · <a href="https://myanimelist.net" target="_blank" rel="noopener">MyAnimeList</a>. Cached for a week; snapshots show if the APIs are down.</p>
+<p class="footnote">Live data: <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a> · <a href="https://myanimelist.net" target="_blank" rel="noopener">MyAnimeList</a>. Cached for hours; snapshots show if the APIs are down.</p>
 </main>
 </div>
 </div>

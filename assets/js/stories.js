@@ -48,7 +48,7 @@
         tabs: [
           { id: "st", label: "Story",
             html: sum.text
-              ? '<div class="wiki-text">' + VT.esc(sum.text) + "</div>"
+              ? '<div class="wiki-text">' + VT.esc(sum.text).replace(/\n/g, "<br>") + "</div>"
               : "<p>" + VT.esc(a.blurb) + "</p><p>Live text unavailable — the full article is one tap away.</p>" },
           { id: "vd", label: "Videos (" + rel.length + ")",
             html: rel.length ? rel.map(VT.miniVideoHTML).join("") : "<p>No VerseTube video on this arc yet.</p>" }

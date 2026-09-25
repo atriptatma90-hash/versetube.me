@@ -18,7 +18,7 @@
     }
     grid.innerHTML = list.map(function (v) {
       return '<div class="media-card" data-yt="' + VT.esc(v.id) + '">' +
-        '<div class="card-art"><img src="' + VT.esc(v.thumb) + '" alt="" loading="lazy">' +
+        '<div class="card-art"><img src="' + VT.esc(v.thumb) + '" alt="' + VT.esc(v.title) + '" loading="lazy" onerror="VT.thumbFail(this)">' +
         '<div class="card-badges">' + (v.isShort ? '<span class="badge gold">SHORT</span>' : "") + "</div></div>" +
         '<div class="card-body"><h3>' + VT.esc(v.title) + "</h3>" +
         '<div class="card-meta">' + VT.esc([v.views, v.ago].filter(Boolean).join(" · ")) + "</div></div></div>";

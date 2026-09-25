@@ -4,7 +4,7 @@ var VT = (function () {
   "use strict";
 
   /* ---------- themes (DownloadVerse-style data-theme switch) ---------- */
-  var THEMES = ["verse", "ocean", "black", "white"];
+  var THEMES = ["verse", "black", "white"];
   function getTheme() {
     try { return localStorage.getItem("vt-theme") || "verse"; } catch (e) { return "verse"; }
   }
@@ -155,12 +155,49 @@ var VT = (function () {
       return { data: j.data, cached: false };
     });
   }
-  var ANIME_Q = "query ($s: String) { Media(search: $s, type: ANIME, sort: SEARCH_MATCH) {" +
+  var ANIME_Q = "query ($s: String, $id: Int) { Media(search: $s, id: $id, type: ANIME, sort: SEARCH_MATCH) {" +
     "id title { romaji english } coverImage { extraLarge large } bannerImage averageScore " +
     "episodes status format genres description(asHtml: false) siteUrl trailer { id site } } }";
-  function anilistAnime(search) {
-    return anilist(ANIME_Q, { s: search }, "anime:" + search.toLowerCase()).then(function (r) {
+  function anilistAnime(search, id) {
+    return anilist(ANIME_Q, { s: search || null, id: id || null }, "anime:" + (id || String(search).toLowerCase())).then(function (r) {
       return { anime: r.data.Media, cached: r.cached };
+    });
+  }
+  /* Browse any anime: trending / popular / search (one query, 18 per page). */
+  var BROWSE_Q = "query ($sort: [MediaSort], $search: String) { Page(page: 1, perPage: 18) {" +
+    "media(type: ANIME, sort: $sort, search: $search) {" +
+    "id title { romaji english } coverImage { extraLarge large } averageScore episodes format status genres } } }";
+  function anilistBrowse(opts) {
+    opts = opts || {};
+    var sort = opts.sort || ["TRENDING_DESC"];
+    var key = "browse:" + sort.join(",") + ":" + (opts.search || "").toLowerCase();
+    return anilist(BROWSE_Q, { sort: sort, search: opts.search || null }, key).then(function (r) {
+      return { list: ((r.data.Page || {}).media || []).filter(Boolean), cached: r.cached };
+    });
+  }
+  /* Characters of a given anime (for the detail dialog). */
+  var MEDIA_CHARS_Q = "query ($id: Int) { Media(id: $id) { characters(perPage: 14, sort: [ROLE, RELEVANCE]) {" +
+    "edges { role node { id name { first middle last full userPreferred } image { large } description(asHtml: false) siteUrl " +
+    "media(perPage: 2, type: ANIME) { nodes { title { romaji english } } } } } } } }";
+  function anilistMediaCharacters(id) {
+    return anilist(MEDIA_CHARS_Q, { id: id }, "mchars:" + id).then(function (r) {
+      var edges = ((((r.data || {}).Media || {}).characters || {}).edges) || [];
+      return { list: edges.map(function (e) { var n = e.node; n.role = e.role; return n; }), cached: r.cached };
+    });
+  }
+  /* Search ANY character across all anime. */
+  var CHAR_SEARCH_Q = "query ($q: String) { Page(page: 1, perPage: 24) {" +
+    "characters(search: $q, sort: [FAVOURITES_DESC]) {" +
+    "id name { first middle last full userPreferred } image { large } description(asHtml: false) siteUrl " +
+    "media(perPage: 3, type: ANIME) { nodes { title { romaji english } } } } } }";
+  function anilistCharacterSearch(q) {
+    return anilist(CHAR_SEARCH_Q, { q: q }, "charsearch:" + q.toLowerCase()).then(function (r) {
+      var list = ((r.data.Page || {}).characters || []).filter(Boolean);
+      list.forEach(function (c) {
+        var m = c.media && c.media.nodes && c.media.nodes[0];
+        c.series = m ? (m.title.romaji || m.title.english || "") : "";
+      });
+      return { list: list, cached: r.cached };
     });
   }
   var CHAR_Q = "query ($s: String) { Character(search: $s, sort: SEARCH_MATCH) {" +
@@ -204,7 +241,7 @@ var VT = (function () {
   }
   function miniVideoHTML(v) {
     return '<div class="mini-video" data-yt="' + esc(v.id) + '">' +
-      '<img src="' + esc(v.thumb) + '" alt="" loading="lazy">' +
+      '<img src="' + esc(v.thumb) + '" alt="' + esc(v.title) + '" loading="lazy" onerror="VT.thumbFail(this)">' +
       "<span>" + esc(v.title) + "</span></div>";
   }
   function bindMiniVideos(root) {
@@ -217,15 +254,25 @@ var VT = (function () {
 
   /* Progressive art: the letter fallback stays visible until the live
      image actually loads (Fandom's CDN 403s hotlinks that send a
-     Referer, so images load with no-referrer; failures keep the letter). */
-  function setArt(container, url) {
+     Referer, so images load with no-referrer; failures keep the letter).
+     NOTE: never set im.loading="lazy" here — a detached lazy Image never
+     loads (no layout box to observe), so the letter never gets replaced. */
+  function setArt(container, url, alt) {
     if (!container || !url) return;
     var im = new Image();
-    im.alt = "";
-    im.loading = "lazy";
+    im.alt = alt || "";
     try { im.referrerPolicy = "no-referrer"; } catch (e) {}
     im.addEventListener("load", function () { container.appendChild(im); });
     im.src = url;
+  }
+
+  /* Thumbnail fallback: dead/removed YouTube IDs 404 on ytimg — swap to
+     the site logo so cards never show a broken image. */
+  function thumbFail(el) {
+    if (!el || el.getAttribute("data-fallback") === "1") return;
+    el.setAttribute("data-fallback", "1");
+    el.onerror = null;
+    el.src = "/logo.png";
   }
 
   /* ---------- tabbed detail dialog (DownloadVerse-style) ---------- */
@@ -238,7 +285,7 @@ var VT = (function () {
     document.getElementById("detailSub").textContent = o.sub || "";
     var art = document.getElementById("detailArt");
     art.innerHTML = '<div class="letter-fallback">' + esc((o.title || "?").charAt(0)) + "</div>";
-    if (o.img) setArt(art, o.img);
+    if (o.img) setArt(art, o.img, o.title || "");
     var facts = document.getElementById("detailFacts");
     facts.innerHTML = (o.facts || []).map(function (f) {
       return '<div class="fact"><span>' + esc(f[0]) + "</span><strong>" + esc(f[1]) + "</strong></div>";
@@ -251,16 +298,26 @@ var VT = (function () {
       b.textContent = t.label;
       b.setAttribute("role", "tab");
       b.setAttribute("aria-selected", i === 0 ? "true" : "false");
+      b._tabId = t.id;
+      b._tabHTML = t.html; // mutable: async loaders can update via setTabHTML
       b.addEventListener("click", function () {
         tabBar.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-selected", "false"); });
         b.setAttribute("aria-selected", "true");
-        body.innerHTML = t.html;
+        body.innerHTML = b._tabHTML;
         bindMiniVideos(body);
       });
       tabBar.appendChild(b);
     });
     body.innerHTML = o.tabs && o.tabs.length ? o.tabs[0].html : "";
     bindMiniVideos(body);
+    // delegation: character rows inside any tab -> shared character dialog
+    body.onclick = function (e) {
+      var el = e.target && e.target.closest ? e.target.closest("[data-charidx]") : null;
+      if (!el) return;
+      var list = VT._detailChars || [];
+      var c = list[+el.getAttribute("data-charidx")];
+      if (c && openCharacter) openCharacter(c);
+    };
     var foot = document.getElementById("detailFoot");
     foot.innerHTML = (o.cached
       ? '<span class="badge cache">Saved snapshot</span>'
@@ -280,6 +337,71 @@ var VT = (function () {
       if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) {
         dlg.close ? dlg.close() : dlg.removeAttribute("open");
       }
+    });
+  }
+
+  /* Turn AniList/Fandom description HTML or markdown into clean plain text:
+     block tags -> newlines, drop spoiler markers (~!…!~), markdown links
+     [text](url) -> text, __bold__ / _italic_ / '''…''' markers removed.
+     Callers wrap the result in esc().replace(/\n/g, "<br>"). */
+  function wikiText(html, maxChars) {
+    var s = String(html || "")
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/(p|div|li|h[1-6]|tr)>/gi, "\n");
+    var d = document.createElement("div");
+    d.innerHTML = s;
+    var t = (d.textContent || "")
+      .replace(/~!|!~/g, "")
+      .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+      .replace(/'''?/g, "")
+      .replace(/__(.*?)__/g, "$1")
+      .replace(/(^|[\s(])_([^_\n]+)_(?=[\s.,;:!?)]|$)/g, "$1$2")
+      .replace(/\n{3,}/g, "\n\n")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n /g, "\n")
+      .trim();
+    var max = maxChars || 2000;
+    if (t.length > max) t = t.slice(0, max).replace(/\s+\S*$/, "") + "…";
+    return t;
+  }
+
+  /* Display name for a live AniList character. AniList stores given-name
+     first, but some series use family-name first in English (One Piece
+     "Monkey D. Luffy", Dragon Ball "Son Goku") — reorder for those. */
+  function charName(c) {
+    var n = (c && c.name) || {};
+    var series = (c && c.series) || "";
+    if (!series && c && c.media && c.media.nodes && c.media.nodes[0]) {
+      series = c.media.nodes[0].title.english || c.media.nodes[0].title.romaji || "";
+    }
+    if (n.last && /one piece|dragon ball/i.test(series)) {
+      return [n.last, n.middle, n.first].filter(Boolean).join(" ");
+    }
+    return n.userPreferred || n.full || [n.first, n.middle, n.last].filter(Boolean).join(" ");
+  }
+
+  /* Shared character dialog for LIVE (AniList) characters — used by the
+     anime detail's Characters tab and the characters page search results. */
+  function openCharacter(c) {
+    if (!c) return;
+    var name = charName(c) || "?";
+    var media = c.media && c.media.nodes && c.media.nodes[0];
+    var series = c.series || (media && (media.title.english || media.title.romaji)) || "";
+    var rel = relatedVideos([name].concat(c.keys || []), 4, series ? [series] : null);
+    var desc = wikiText(c.description, 2400);
+    openDetail({
+      eyebrow: (series ? series.toUpperCase() + " · CHARACTER" : "CHARACTER"),
+      title: name, sub: series, img: c.image && (c.image.large || c.image.medium),
+      facts: [
+        ["Series", series || "—"],
+        ["Source", "AniList"],
+        ["Videos", rel.length + " on VerseTube"]
+      ],
+      tabs: [
+        { id: "ov", label: "Overview", html: '<div class="wiki-text">' + (desc ? esc(desc).replace(/\n/g, "<br>") : "No bio yet — open the AniList page for details.") + "</div>" },
+        { id: "vd", label: "Videos (" + rel.length + ")", html: rel.length ? rel.map(miniVideoHTML).join("") : "<p>No VerseTube video on this character yet.</p>" }
+      ],
+      sourceUrl: c.siteUrl, sourceLabel: "Open on AniList", cached: false
     });
   }
 
@@ -318,6 +440,8 @@ var VT = (function () {
       if (a.getAttribute("data-page") === page) a.classList.add("active");
       else a.classList.remove("active");
     });
+    var vc = document.getElementById("navVideoCount");
+    if (vc && window.VIDEOS) vc.textContent = VIDEOS.length;
     var y = document.getElementById("year");
     if (y) y.textContent = new Date().getFullYear();
     var label = document.getElementById("crumbTitle");
@@ -330,7 +454,10 @@ var VT = (function () {
     fandom: fandom, fandomSearch: fandomSearch, fandomImage: fandomImage,
     wikitextSummary: wikitextSummary, fandomSummary: fandomSummary,
     anilist: anilist, anilistAnime: anilistAnime, anilistCharacter: anilistCharacter,
+    anilistBrowse: anilistBrowse, anilistMediaCharacters: anilistMediaCharacters,
+    anilistCharacterSearch: anilistCharacterSearch,
     jikan: jikan, relatedVideos: relatedVideos, miniVideoHTML: miniVideoHTML, bindMiniVideos: bindMiniVideos,
-    openDetail: openDetail, initDialog: initDialog, Player: Player, initNav: initNav, setArt: setArt
+    openDetail: openDetail, initDialog: initDialog, Player: Player, initNav: initNav, setArt: setArt,
+    thumbFail: thumbFail, openCharacter: openCharacter, charName: charName, wikiText: wikiText, _detailChars: []
   };
 })();
